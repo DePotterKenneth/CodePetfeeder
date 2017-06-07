@@ -1,6 +1,11 @@
+from model.Ultrasonic import Ultrasonic
+from RPi import GPIO
+import time
+
 try:
-    print("This is a test line")
-    print("2")
+    dist = Ultrasonic(20,16)
+    print(str(dist.distance()))
+    time.sleep(2)
 
 except Exception as e:
     print("exection happend:")
@@ -8,4 +13,5 @@ except Exception as e:
 
 
 finally:
+    GPIO.cleanup()
     print("Program stopped")

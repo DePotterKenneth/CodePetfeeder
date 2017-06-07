@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="RaspberryPi">
+  <component name="PublishConfigData" serverName="ProjectPi">
     <serverData>
+      <paths name="ProjectPi">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/petfeeder_code" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="RaspberryPi">
         <serverdata>
           <mappings>

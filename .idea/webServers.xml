@@ -10,6 +10,14 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
+      <webServer id="4717ff6e-cb68-4100-b130-337dd626c085" name="ProjectPi" url="http://169.254.10.111">
+        <fileTransfer host="169.254.10.111" port="22" rootFolder="/home/petfeeder" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

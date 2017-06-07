@@ -21,6 +21,7 @@ class Ultrasonic():
         StartTime = time.time()
         StopTime = time.time()
 
+        print("Waiting for an echo")
         while GPIO.input(self.__echo_pin) == 0:
             StartTime = time.time()
 
