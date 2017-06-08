@@ -1,18 +1,19 @@
-from model.Ultrasonic import Ultrasonic
+from model.Pir import Pir
 from RPi import GPIO
 import time
 
 try:
     while True:
-        dist = Ultrasonic(20, 16)
-        print(str(dist.distance()))
+        pir_instance = Pir(21)
 
-        time.sleep(2)
+        if pir_instance.read_pir() == True:
+            print("Motion")
+        else:
+            print("Nothing")
 
 except Exception as e:
     print("exection happend:")
     print(str(e))
-
 
 finally:
     GPIO.cleanup()

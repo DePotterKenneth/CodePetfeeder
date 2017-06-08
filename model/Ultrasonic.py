@@ -14,6 +14,7 @@ class Ultrasonic():
 
 
     def distance(self):
+        print("Pulse sent")
         GPIO.output(self.__trigger_pin, True)
         time.sleep(0.00001)
         GPIO.output(self.__trigger_pin, False)
@@ -31,5 +32,6 @@ class Ultrasonic():
 
         TimeElapsed = StopTime - StartTime
         distance = (TimeElapsed * 34300) / 2
+
 
         return distance
