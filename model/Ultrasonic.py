@@ -14,7 +14,7 @@ class Ultrasonic():
 
 
     def distance(self):
-        print("Pulse sent")
+        #print("Pulse sent")
         GPIO.output(self.__trigger_pin, True)
         time.sleep(0.00001)
         GPIO.output(self.__trigger_pin, False)
@@ -22,7 +22,7 @@ class Ultrasonic():
         StartTime = time.time()
         StopTime = time.time()
 
-        print("Waiting for an echo")
+        #print("Waiting for an echo")
         while GPIO.input(self.__echo_pin) == 0:
             StartTime = time.time()
 

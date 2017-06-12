@@ -1,7 +1,7 @@
 from RPi import GPIO
 from time import sleep
 
-class servo_motor():
+class ServoMotor():
 
     def __init__(self, pinnummer_servo, omgekeerd =False):
         self.__pinnummer_servo = pinnummer_servo

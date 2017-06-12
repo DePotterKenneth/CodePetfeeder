@@ -28,7 +28,7 @@ class lcd:
                 shift_bit = shift_bit >> 1
 
 
-    def stuur_teken(self, char):
+    def send_char(self, char):
         byte = ord(char) #getal omzetten naar een acii waarde
 
         GPIO.output(self.__e, GPIO.HIGH)
@@ -49,7 +49,7 @@ class lcd:
             sleep(self.__delay)
 
 
-    def stuur_instructie(self, byte):
+    def send_instruction(self, byte):
         GPIO.output(self.__e, GPIO.HIGH)
         GPIO.output(self.__rs, GPIO.LOW)
         self.set_GPIO_bits(byte)
@@ -69,22 +69,22 @@ class lcd:
     def init_display(self):
         # print("1ste:")
         if self.__achtbit == True:
-            self.stuur_instructie(0x38)  # fuction set 8bit
+            self.send_instruction(0x38)  # fuction set 8bit
         else:
-            self.stuur_instructie(0x28)  # fuction set 4bit
+            self.send_instruction(0x28)  # fuction set 4bit
 
         # print("2de:")
-        self.stuur_instructie(0x0d)  # display on
+        self.send_instruction(0x0d)  # display on
 
         # print("3de:")
-        self.stuur_instructie(0x01)  # clear display and cursor home
+        self.send_instruction(0x01)  # clear display and cursor home
 
-    def schrijf_woord(self, woord):
+    def write_word(self, woord):
         for getal in range(0, int(len(woord))):
-            self.stuur_teken(woord[getal:getal + 1])
+            self.send_char(woord[getal:getal + 1])
 
-    def verzet_naar_lijn_twee(self):
-        self.stuur_instructie(0xC0)
+    def move_to_second_line(self):
+        self.send_instruction(0xC0)
 
-    def reset_display(self):
-        pass
+    def clear_display(self):
+        self.send_instruction(0x01)
