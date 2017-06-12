@@ -33,5 +33,24 @@ class Ultrasonic():
         TimeElapsed = StopTime - StartTime
         distance = (TimeElapsed * 34300) / 2
 
-
         return distance
+
+
+    def get_content_in_percent(self):
+        content = 500 #ml
+        distance_empty = 45    #distance when the bowl is empty = 0 ml
+        distance_at_defined_content = 40    #distance when the bowl is at max
+
+        distance = self.distance()
+
+        return distance/ (distance_at_defined_content - distance_empty) * 100
+
+
+    def get_content_in_ml(self):
+        content = 500 #ml
+        distance_empty = 45    #distance when the bowl is empty = 0 ml
+        distance_at_defined_content = 40    #distance when the bowl is at max
+
+        distance = self.distance()
+
+        return distance/ (distance_at_defined_content - distance_empty) * content
