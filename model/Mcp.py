@@ -2,7 +2,7 @@ from RPi import GPIO
 import spidev
 import time
 
-class mcp:
+class Mcp:
 
     def __init__(self, spi_busnumber =0, spi_apparaat_number=0):#RBP heeft maar 1 bus, en maar 1 naar buitengebrachte apparaat
         self.__spi = spidev.SpiDev()                            #creeert een spi instantie

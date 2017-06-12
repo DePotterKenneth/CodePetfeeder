@@ -1,7 +1,7 @@
 from RPi import GPIO
 from time import sleep
 
-class lcd:
+class Lcd:
     def __init__(self, e, rs, d7, d6, d5, d4, d3=0, d2=0, d1=0, d0=0, achtbit=False, four_bit_instruction_hard_wired=True):
         self.__e = e
         self.__rs = rs

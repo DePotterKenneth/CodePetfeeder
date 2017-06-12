@@ -1,6 +1,7 @@
 from model.hx711.hx711 import HX711
-from model.Lcd import lcd
-from model.Ultrasonic import Ultrasonic
+from  model.DbConn import DbConnection
+from model.Lcd import Lcd
+from model.Mcp import Mcp
 from model.Ultrasonic import Ultrasonic
 from RPi import GPIO
 import time
