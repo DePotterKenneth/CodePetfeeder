@@ -1,37 +1,18 @@
-from model.hx711.hx711 import HX711
-from model.DbConn import DbConnection
-from model.Lcd import Lcd
-from model.Mcp import Mcp
-from model.Pir import Pir
-from model.ServoMotor import ServoMotor
-from model.Ultrasonic import Ultrasonic
 from RPi import GPIO
-import time
+from model.Alarms import Alarms
+from model.Feeder import Feeder
 
 try:
-    instance_hx711 = HX711(24, 23)
-    instance_lcd = Lcd(5, 22, 26, 19, 13, 6)
-    instance_mcp = Mcp()
-    instance_pir = Pir(21)
-    instance_servo_motor = ServoMotor(25, True)
-    instance_ultrasonic = Ultrasonic(20, 16)
 
-    previous_content_food = instance_hx711.get_weight(5)
-    tolerance_food = 2
+    instance_feeder = Feeder()
+    instance_alarm =  Alarms()
 
     while True:
-        #check water level
-        if instance_pir.read_pir() == True:
-            while instance_pir.read_pir() == True:
-                print("Waiting for the do to leave the water bowl.")
+        drink_in_bowl = instance_feeder.checkDrink(1)
+        food_in_bowl = instance_feeder.checkFood(1)
+        provision_left = instance_feeder.checkProvision()
 
-
-
-        #check bowl content
-        if  previous_content_food <= (instance_hx711.get_weight(5) - tolerance_food):
-            #sent querry to update foodlog
-            pass
-
+        instance_alarm.checkAlarms(drink_in_bowl, food_in_bowl, provision_left)
 
 
 except Exception as e:

@@ -1,5 +1,6 @@
 from RPi import GPIO
 from time import sleep
+from RPi import GPIO
 
 class Lcd:
     def __init__(self, e, rs, d7, d6, d5, d4, d3=0, d2=0, d1=0, d0=0, achtbit=False, four_bit_instruction_hard_wired=True):
@@ -9,6 +10,13 @@ class Lcd:
         self.__delay = 0.015
         self.__achtbit = achtbit
         self.__four_bit_instruction_hard_wired =four_bit_instruction_hard_wired
+
+        GPIO.setup(e, GPIO.OUT)
+        GPIO.setup(rs, GPIO.OUT)
+
+        for getal in range(0,8):
+            GPIO.setup(self.__pinnen_array[getal], GPIO.OUT)
+
 
 
     def set_GPIO_bits(self, byte):
