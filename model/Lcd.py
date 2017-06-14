@@ -87,9 +87,9 @@ class Lcd:
         # print("3de:")
         self.send_instruction(0x01)  # clear display and cursor home
 
-    def write_word(self, woord):
-        for getal in range(0, int(len(woord))):
-            self.send_char(woord[getal:getal + 1])
+    def write_word(self, word):
+        for getal in range(0, int(len(word))):
+            self.send_char(word[getal:getal + 1])
 
     def move_to_second_line(self):
         self.send_instruction(0xC0)

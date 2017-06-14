@@ -1,29 +1,26 @@
 from time import sleep
+from model.hx711.hx711 import HX711
+from model.dbsecurity.dbconn import DbConnection
+from model.Lcd import Lcd
+from model.Mcp import Mcp
+from model.Pir import Pir
+from model.ServoMotor import ServoMotor
+from model.Ultrasonic import Ultrasonic
+import datetime
 
 class Feeder():
-    from model.hx711.hx711 import HX711
-    from model.dbsecurity.dbconn import DbConnection
-    from model.Lcd import Lcd
-    from model.Mcp import Mcp
-    from model.Pir import Pir
-    from model.ServoMotor import ServoMotor
-    from model.Ultrasonic import Ultrasonic
-    from RPi import GPIO
-    import time
-    import datetime
-
 
     def __init__(self, tolerance_food = 2, reference_unit_hx711 = 92):
-        self.__instance_hx711 = self.HX711(24, 23)
-        self.__instance_dbconn = self.DbConnection("petfeeder_db")
-        self.__instance_lcd = self.Lcd(5, 22, 26, 19, 13, 6)
-        self.__instance_mcp = self.Mcp()
-        self.__instance_pir = self.Pir(21)
-        self.__instance_servo_motor = self.ServoMotor(25, True)
-        self.__instance_ultrasonic = self.Ultrasonic(20, 16)
+        self.__instance_hx711 = HX711(24, 23)
+        self.__instance_dbconn = DbConnection("petfeeder_db")
+        self.__instance_lcd = Lcd(5, 22, 26, 19, 13, 6)
+        self.__instance_mcp = Mcp()
+        self.__instance_pir = Pir(21)
+        self.__instance_servo_motor = ServoMotor(25, True)
+        self.__instance_ultrasonic = Ultrasonic(20, 16)
 
         self.__instance_hx711.set_reading_format("LSB", "MSB")
-        self.__instance_hx711.set_reference_unit(reference_unit_hx711)  # the numer is a calibration number, see example
+        self.__instance_hx711.set_reference_unit(reference_unit_hx711)  # the number is a calibration number, see example
         self.__instance_hx711.reset()
         self.__instance_hx711.tare()
 
@@ -35,7 +32,19 @@ class Feeder():
         self.__provision = 0  # a percentage
 
     def checkFoodNeeded(self):
-        pass
+        #get the food settings (time, amount, ...) to check if he needs to be feeded
+        sql = 'SELECT * FROM petfeeder_db.tblfoodsettings;'
+        records  = self.__instance_dbconn.query(sql, dictionary=True)
+
+        for number in range(0, len(records)):
+            record = records[number]
+            print(record['time'].second)
+            print(datetime.datetime.now().second)
+
+            if record['time'].hour == datetime.datetime.now().hour and record['time'].minute == datetime.datetime.now().minute and record['time'].second == datetime.datetime.now().second:
+                self.__giveFood(amount= record['amount_to_be_dispensed'], cummulative= record['cumulative'])
+            else:
+                print("No")
 
     def checkFood(self, dog_id = 1):
         #check bowl content with some tolerance
@@ -48,7 +57,7 @@ class Feeder():
             )
             params = {
                 'grams_left': self.__instance_hx711.get_weight(5),
-                'timestamp': self.datetime.datetime.now(),
+                'timestamp': datetime.datetime.now(),
                 'dog_id': dog_id,
             }
 
@@ -68,7 +77,7 @@ class Feeder():
             )
             params = {
                 'millilitres_left': self.__instance_ultrasonic.get_content_in_ml(),
-                'timestamp': self.datetime.datetime.now(),
+                'timestamp': datetime.datetime.now(),
                 'dog_id': dog_id,
             }
 
@@ -108,13 +117,15 @@ class Feeder():
         )
         params = {
             'percentage_left': current_provision,
-            'timestamp': self.datetime.datetime.now(),
+            'timestamp': datetime.datetime.now(),
         }
+
+        self.__instance_dbconn.execute(sql, params)
 
         return current_provision
 
 
-    def giveFood(self, amount, cummulative):
+    def __giveFood(self, amount, cummulative):
         amount_left = self.__instance_hx711.get_weight(5)
 
         if cummulative == True:
