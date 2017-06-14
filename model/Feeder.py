@@ -1,4 +1,4 @@
-
+from time import sleep
 
 class Feeder():
     from model.hx711.hx711 import HX711
@@ -34,8 +34,10 @@ class Feeder():
 
         self.__provision = 0  # a percentage
 
+    def checkFoodNeeded(self):
+        pass
 
-    def checkFood(self, dog_id):
+    def checkFood(self, dog_id = 1):
         #check bowl content with some tolerance
         if  self.__previous_content_food <= (self.__instance_hx711.get_weight(5) - self.__tolerance_food):
             #sent querry to update foodlog
@@ -52,12 +54,14 @@ class Feeder():
 
             self.__instance_dbconn.execute(sql, params)
 
-    def checkDrink(self, dog_id):
+    def checkDrink(self, dog_id = 1):
         #check water level
         if self.__instance_pir.read_pir() == True:
             while self.__instance_pir.read_pir() == True:
-                print("Waiting for the dog to leave the water bowl.")
+                #print("Waiting for the dog to leave the water bowl.")
+                sleep(0.1)
 
+            #sent querry to update the database
             sql = (
                 'INSERT INTO petfeeder_db.tbldrinklog (millilitres_left, timestamp, dog_id) '
                 'VALUES ( %(millilitres_left)s, %(timestamp)s,  %(dog_id)s );'
@@ -65,10 +69,12 @@ class Feeder():
             params = {
                 'millilitres_left': self.__instance_ultrasonic.get_content_in_ml(),
                 'timestamp': self.datetime.datetime.now(),
-                'dog_id': 1,
+                'dog_id': dog_id,
             }
 
             self.__instance_dbconn.execute(sql, params)
+
+        return self.__instance_ultrasonic.get_content_in_ml()
 
 
     def checkProvision(self):
@@ -95,6 +101,7 @@ class Feeder():
         else:
             current_provision = 10
 
+        # sent querry to update the database
         sql = (
             'INSERT INTO petfeeder_db.tblprovision (percentage_left, timestamp, dog_id) '
             'VALUES ( %(millilitres_left)s, %(timestamp)s);'
@@ -104,6 +111,7 @@ class Feeder():
             'timestamp': self.datetime.datetime.now(),
         }
 
+        return current_provision
 
 
     def giveFood(self, amount, cummulative):
@@ -113,7 +121,8 @@ class Feeder():
             self.__instance_servo_motor.open()
 
             while self.__instance_hx711.get_weight(5) <= amount:
-                print("Food is being dispensed")
+                #print("Food is being dispensed")
+                sleep(0.1)
 
             self.__instance_servo_motor.close()
 
@@ -126,3 +135,5 @@ class Feeder():
             self.__instance_servo_motor.close()
 
         self.checkProvision()
+
+        return self.__instance_hx711.get_weight(5)
