@@ -1,7 +1,7 @@
 from time import sleep
 from model.hx711.hx711 import HX711
 from model.dbsecurity.dbconn import DbConnection
-from model.Lcd import Lcd
+
 from model.Mcp import Mcp
 from model.Pir import Pir
 from model.ServoMotor import ServoMotor
@@ -10,10 +10,9 @@ import datetime
 
 class Feeder():
 
-    def __init__(self, tolerance_food = 2, reference_unit_hx711 = 92):
+    def __init__(self, tolerance_food = 3, reference_unit_hx711 = 96, load_cell_cal = 1.576):
         self.__instance_hx711 = HX711(24, 23)
         self.__instance_dbconn = DbConnection("petfeeder_db")
-        self.__instance_lcd = Lcd(5, 22, 26, 19, 13, 6)
         self.__instance_mcp = Mcp()
         self.__instance_pir = Pir(21)
         self.__instance_servo_motor = ServoMotor(25, True)
@@ -23,13 +22,19 @@ class Feeder():
         self.__instance_hx711.set_reference_unit(reference_unit_hx711)  # the number is a calibration number, see example
         self.__instance_hx711.reset()
         self.__instance_hx711.tare()
+        self.__load_cell_cal =load_cell_cal
 
-        self.__instance_lcd.init_display()
+        self.__previous_content_food = -1
 
-        self.__previous_content_food = self.__instance_hx711.get_weight(5)
+        while self.__previous_content_food < 0:
+            self.__previous_content_food = self.__instance_hx711.get_weight(5)
+
+        print(self.__previous_content_food)
+
         self.__tolerance_food = tolerance_food  # the amount of tolerance you want to be on the reading
 
         self.__provision = 0  # a percentage
+
 
     def checkFoodNeeded(self):
         #get the food settings (time, amount, ...) to check if he needs to be feeded
@@ -47,23 +52,40 @@ class Feeder():
                 print("No")
 
     def checkFood(self, dog_id = 1):
-        #check bowl content with some tolerance
-        if  self.__previous_content_food < (self.__instance_hx711.get_weight(5) - self.__tolerance_food):
-            #sent querry to update foodlog
+        if self.__instance_pir.read_pir() == True:
+            # check bowl content with some tolerance
+            current_food = -1
 
-            sql = (
-                'INSERT INTO petfeeder_db.tblfoodlog (grams_left, timestamp, dog_id) '
-                'VALUES ( %(grams_left)s, %(timestamp)s,  %(dog_id)s );'
-            )
-            params = {
-                'grams_left': self.__instance_hx711.get_weight(5),
-                'timestamp': datetime.datetime.now(),
-                'dog_id': dog_id,
-            }
 
-            self.__instance_dbconn.execute(sql, params)
+            current_food = abs(((self.__instance_hx711.get_weight(5) / 14)) / self.__load_cell_cal)
 
-        return self.__instance_hx711.get_weight(5)
+
+            if self.__previous_content_food < (current_food - self.__tolerance_food) or self.__previous_content_food > (current_food + self.__tolerance_food ):
+                # sent querry to update foodlog
+
+                sql = (
+                    'INSERT INTO petfeeder_db.tblfoodlog (grams_left, timestamp, dog_id) '
+                    'VALUES ( %(grams_left)s, %(timestamp)s,  %(dog_id)s );'
+                )
+                params = {
+                    'grams_left': current_food,
+                    'timestamp': datetime.datetime.now(),
+                    'dog_id': dog_id,
+                }
+
+                self.__instance_dbconn.execute(sql, params)
+
+                # update current food
+
+                print("food updated")
+
+                self.__previous_content_food = current_food
+
+            return current_food
+
+        else:
+            return self.__previous_content_food
+
 
     def checkDrink(self, dog_id = 1):
         #check water level

@@ -113,17 +113,18 @@ class HX711:
 
         return float(self.lastVal)
 
-    def read_average(self, times=3):
+    def read_average(self, times=1000):
         values = float(0)
         for i in range(times):
             values += self.read_long()
+            time.sleep(0.01)
 
         return values / times
 
-    def get_value(self, times=3):
+    def get_value(self, times=1000):
         return self.read_average(times) - self.OFFSET
 
-    def get_weight(self, times=3):
+    def get_weight(self, times=1000):
         value = self.get_value(times)
         value = value / self.REFERENCE_UNIT
         return value
