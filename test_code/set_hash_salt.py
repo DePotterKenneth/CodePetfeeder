@@ -2,6 +2,6 @@ from model.dbsecurity.pwdhashpetfeeder import setpasword, verify_credentials
 import datetime
 from time import sleep
 
-setpasword("koekjestrommel")
+setpasword("Xd7mpAn39")
 sleep(1)
-print(verify_credentials("koekjestrommel"))
+print(verify_credentials("Xd7mpAn39"))

@@ -6,8 +6,8 @@ try:
     while True:
         dist = Ultrasonic(20, 16)
         print(str(dist.distance()))
-
-        time.sleep(2)
+        print("conten: =" + str(dist.get_content_in_ml()))
+        time.sleep(3)
 
 except Exception as e:
     print("exection happend:")

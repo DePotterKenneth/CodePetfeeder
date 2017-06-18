@@ -1,17 +1,20 @@
-from ..model.ServoMotor import servo_motor
+from model.ServoMotor import ServoMotor
 from RPi import GPIO
 from time import sleep
 
 try:
-    instantie_servo = servo_motor(21, 1)
+    instantie_servo = ServoMotor(25, 1)
 
     while True:
-        instantie_servo.zet_hoek(50)
-        sleep(2)
-        instantie_servo.zet_hoek(90)
-        sleep(2)
-        instantie_servo.zet_hoek(130)
-        sleep(2)
+        instantie_servo.set_angle(40)
+        print("hoek op 4 0 graden")
+        sleep(4)
+        instantie_servo.set_angle(90)
+        print("hoek op 90 graden")
+        sleep(4)
+        instantie_servo.set_angle(150)
+        print("hoek op 150 graden")
+        sleep(4)
 
 except Exception as e:
     print(str(e))

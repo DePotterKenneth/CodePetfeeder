@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-
+import math
 
 class Ultrasonic():
     def __init__(self, trigger_pin, echo_pin):
@@ -43,14 +43,29 @@ class Ultrasonic():
 
         distance = self.distance()
 
-        return distance/ (distance_at_defined_content - distance_empty) * 100
+        return self.get_content_in_ml() / 5
 
 
     def get_content_in_ml(self):
+        amount = 20
         content = 500 #ml
-        distance_empty = 45    #distance when the bowl is empty = 0 ml
-        distance_at_defined_content = 40    #distance when the bowl is at max
+        distance_empty = 32.08   #distance when the bowl is empty = 0 ml
+        distance_at_defined_content = 31.30    #distance when the bowl is at max
+        diff = distance_at_defined_content - distance_empty
+        calibation_number = 0 #number you enter after you calibration
 
-        distance = self.distance()
+        distance = 0
 
-        return distance/ (distance_at_defined_content - distance_empty) * content
+        for getal in range(0, amount):
+            distance += self.distance()
+            time.sleep(0.01)
+
+        distance = distance/amount
+
+
+        diff_distance = distance - distance_empty
+
+        if (diff_distance / diff) *500 > 0:
+            return diff_distance / diff *500 + calibation_number
+        else:
+            return 0

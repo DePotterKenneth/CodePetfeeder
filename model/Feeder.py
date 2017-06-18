@@ -48,7 +48,7 @@ class Feeder():
 
     def checkFood(self, dog_id = 1):
         #check bowl content with some tolerance
-        if  self.__previous_content_food <= (self.__instance_hx711.get_weight(5) - self.__tolerance_food):
+        if  self.__previous_content_food < (self.__instance_hx711.get_weight(5) - self.__tolerance_food):
             #sent querry to update foodlog
 
             sql = (
@@ -62,6 +62,8 @@ class Feeder():
             }
 
             self.__instance_dbconn.execute(sql, params)
+
+        return self.__instance_hx711.get_weight(5)
 
     def checkDrink(self, dog_id = 1):
         #check water level
