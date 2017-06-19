@@ -4,9 +4,9 @@ import time
 
 class Mcp:
 
-    def __init__(self, spi_busnumber =0, spi_apparaat_number=0):#RBP heeft maar 1 bus, en maar 1 naar buitengebrachte apparaat
+    def __init__(self, spi_busnumber =0, spi_device_number=0):#RBP heeft maar 1 bus, en maar 1 naar buitengebrachte apparaat
         self.__spi = spidev.SpiDev()                            #creeert een spi instantie
-        self.__spi.open(spi_busnumber, spi_apparaat_number)     #openent de instanite
+        self.__spi.open(spi_busnumber, spi_device_number)     #openent de instanite
 
     def read_channel(self, channel):
         # instructie om waarde van het kanaal in te kunnen lezen

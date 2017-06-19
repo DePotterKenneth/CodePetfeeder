@@ -18,8 +18,11 @@ try:
     # check the food level
         food_in_bowl = instance_feeder.checkFood(1)
     #
-    # # check the provision
-    #     provision_left = instance_feeder.checkProvision()
+    # check the provision
+        print("here")
+        provision_left = instance_feeder.checkProvision()
+        print(str(provision_left))
+
     #
     # # check if you need to make an alarm
     #     instance_alarm.checkAlarms(drink_in_bowl, food_in_bowl, provision_left)

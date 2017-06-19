@@ -34,6 +34,7 @@ class Feeder():
         self.__tolerance_food = tolerance_food  # the amount of tolerance you want to be on the reading
 
         self.__provision = 0  # a percentage
+        self.__previous_provision = 0
 
 
     def checkFoodNeeded(self):
@@ -110,7 +111,7 @@ class Feeder():
         return self.__instance_ultrasonic.get_content_in_ml()
 
 
-    def checkProvision(self):
+    def checkProvision(self, dog_id = 1):
         # we have 4 ldr's, in a ideal situation (calibration needed)
         # top one < 50% --> 100%
         # top one > 50% --> 75%
@@ -118,12 +119,14 @@ class Feeder():
         # third one > 50% --> 25%
         # bottom one > 50% --> 10%
 
+        print("checking provision")
+
         current_provision = 0
 
-        if self.__instance_mcp.define_light_percentage(0, 1000) > 0.5:
-            if self.__instance_mcp.define_light_percentage(1, 1000) > 0.5:
-                if self.__instance_mcp.define_light_percentage(2, 1000) > 0.5:
-                    if self.__instance_mcp.define_light_percentage(3, 1000) > 0.5:
+        if self.__instance_mcp.define_light_percentage(0, 1000) < 5:
+            if self.__instance_mcp.define_light_percentage(1, 1000) < 5:
+                if self.__instance_mcp.define_light_percentage(2, 1000) < 5:
+                    if self.__instance_mcp.define_light_percentage(3, 1000) < 5:
                         current_provision = 100
                     else:
                         current_provision = 75
@@ -134,17 +137,21 @@ class Feeder():
         else:
             current_provision = 10
 
-        # sent querry to update the database
-        sql = (
-            'INSERT INTO petfeeder_db.tblprovision (percentage_left, timestamp, dog_id) '
-            'VALUES ( %(millilitres_left)s, %(timestamp)s);'
-        )
-        params = {
-            'percentage_left': current_provision,
-            'timestamp': datetime.datetime.now(),
-        }
+        if current_provision != self.__previous_provision:
+            # sent querry to update the database if a change is detected
+            sql = (
+                'INSERT INTO petfeeder_db.tblprovision (percentage_left, timestamp, dog_id) '
+                'VALUES ( %(percentage_left)s, %(timestamp)s, %(dog_id)s);'
+            )
+            params = {
+                'percentage_left': current_provision,
+                'timestamp': datetime.datetime.now(),
+                'dog_id': dog_id,
+            }
 
-        self.__instance_dbconn.execute(sql, params)
+            self.__previous_provision = current_provision
+
+            self.__instance_dbconn.execute(sql, params)
 
         return current_provision
 
